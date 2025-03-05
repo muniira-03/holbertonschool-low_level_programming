@@ -1,7 +1,2 @@
-#ifndef MAIN_H
-#define MAIN_H
-
-int _putchar(char c);
-void print_chessboard(char (*a)[8]);
-
-#endif /* MAIN_H */
+char *_strpbrk(char *s, char *accept);
+char *_strchr(char *s, char c);
