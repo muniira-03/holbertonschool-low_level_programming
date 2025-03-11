@@ -3,6 +3,7 @@
 
 int print_last_digit(int n);
 void times_table(void);
+void times_table(void);
 int print_last_digit(int n);
 void jack_bauer(void);
 int _putchar(char c);
