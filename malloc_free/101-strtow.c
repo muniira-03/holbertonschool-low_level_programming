@@ -1,88 +1,86 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
-#include "main.h"
 
 /**
- * count_words - Counts the number of words in a string
- * @str: The string to count words in
+ * word_count - counts the number of words in a string.
+ * @str: string to count words from.
  *
- * Return: The number of words
+ * Return: number of words.
  */
-int count_words(char *str)
+int word_count(char *str)
 {
-	int count = 0, in_word = 0;
+    int i, wc = 0;
 
-	while (*str)
-	{
-		if (*str != ' ' && *str != '\t' && *str != '\n')
-		{
-			if (!in_word)
-			{
-				count++;
-				in_word = 1;
-			}
-		}
-		else
-			in_word = 0;
-		str++;
-	}
-	return (count);
+    for (i = 0; str[i] != '\0'; i++)
+    {
+        if (str[i] != ' ' && (i == 0 || str[i - 1] == ' '))
+            wc++;
+    }
+
+    return (wc);
 }
 
 /**
- * allocate_words - Allocates memory for the array of strings
- * @str: The string to allocate words for
+ * allocate_word - allocates memory for each word.
+ * @str: the string to be split.
+ * @start: the index where the word starts.
+ * @end: the index where the word ends.
  *
- * Return: Pointer to an array of strings, or NULL on failure
+ * Return: a pointer to the allocated memory for the word.
  */
-char **allocate_words(char *str)
+char *allocate_word(char *str, int start, int end)
 {
-	char **words;
-	int word_count, i, j, len;
+    int i, len = end - start;
+    char *word = malloc(sizeof(char) * (len + 1));
 
-	word_count = count_words(str);
-	words = malloc((word_count + 1) * sizeof(char *));
-	if (!words)
-		return (NULL);
+    if (word == NULL)
+        return (NULL);
 
-	i = 0;
-	while (*str)
-	{
-		if (*str != ' ' && *str != '\t' && *str != '\n')
-		{
-			len = 0;
-			while (str[len] && str[len] != ' ' && str[len] != '\t' && str[len] != '\n')
-				len++;
-			words[i] = malloc((len + 1) * sizeof(char));
-			if (!words[i])
-				return (NULL);
-			for (j = 0; j < len; j++)
-				words[i][j] = str[j];
-			words[i][j] = '\0';
-			i++;
-			str += len;
-		}
-		else
-			str++;
-	}
-	words[i] = NULL;
-	return (words);
+    for (i = 0; i < len; i++)
+        word[i] = str[start + i];
+    word[len] = '\0';
+
+    return (word);
 }
 
 /**
- * strtow - Splits a string into words
- * @str: The string to split
+ * strtow - splits a string into words.
+ * @str: string to be split.
  *
- * Return: A pointer to an array of strings (words), or NULL on failure
+ * Return: pointer to an array of strings (words), or NULL if it fails.
  */
 char **strtow(char *str)
 {
-	char **words;
+    int i, j = 0, len, wc;
+    char **words;
 
-	if (str == NULL || *str == '\0')
-		return (NULL);
+    if (str == NULL || *str == '\0')  /* check for NULL or empty string */
+        return (NULL);
 
-	words = allocate_words(str);
-	return (words);
+    len = 0;
+    while (str[len] != '\0')  /* calculate string length */
+        len++;
+
+    wc = word_count(str);  /* calculate word count */
+    if (wc == 0)  /* No words found */
+        return (NULL);
+
+    words = malloc(sizeof(char *) * (wc + 1));  /* allocate memory for the array of words */
+    if (words == NULL)
+        return (NULL);
+
+    for (i = 0; i < len && j < wc; i++)
+    {
+        if (str[i] != ' ' && (i == 0 || str[i - 1] == ' '))
+        {
+            int start = i;
+            while (i < len && str[i] != ' ')
+                i++;
+            words[j++] = allocate_word(str, start, i);  /* allocate and add word */
+        }
+    }
+
+    words[j] = NULL;  /* set the last element of the array to NULL */
+    return (words);
 }

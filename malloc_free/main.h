@@ -14,5 +14,8 @@ char *argstostr(int ac, char **av);
 int count_words(char *str);
 char **allocate_words(char *str, int word_count);
 char **strtow(char *str);
+int word_count(char *str);
+char *allocate_word(char *str, int start, int end);
+char **strtow(char *str);
 
 #endif /* MAIN_H */
