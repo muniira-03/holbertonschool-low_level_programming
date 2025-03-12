@@ -11,36 +11,36 @@
  */
 char *str_concat(char *s1, char *s2)
 {
-    char *concat;
-    int len1 = 0, len2 = 0, i;
+	char *concat;
+	int len1 = 0, len2 = 0, i;
 
-    /* Handle NULL strings by treating them as empty strings */
-    if (s1 == NULL)
-        s1 = "";
-    if (s2 == NULL)
-        s2 = "";
+	/* Handle NULL strings by treating them as empty strings */
+	if (s1 == NULL)
+		s1 = "";
+	if (s2 == NULL)
+		s2 = "";
 
-    /* Calculate lengths of s1 and s2 */
-    while (s1[len1])
-        len1++;
-    while (s2[len2])
-        len2++;
+	/* Calculate lengths of s1 and s2 */
+	while (s1[len1])
+		len1++;
+	while (s2[len2])
+		len2++;
 
-    /* Allocate memory for the concatenated string */
-    concat = malloc(sizeof(char) * (len1 + len2 + 1));  /* +1 for null terminator */
-    if (concat == NULL)
-        return (NULL);
+	/* Allocate memory for the concatenated string */
+	concat = malloc(sizeof(char) * (len1 + len2 + 1));
+	if (concat == NULL)
+		return (NULL);
 
-    /* Copy s1 to concat */
-    for (i = 0; i < len1; i++)
-        concat[i] = s1[i];
+	/* Copy s1 to concat */
+	for (i = 0; i < len1; i++)
+		concat[i] = s1[i];
 
-    /* Copy s2 to concat */
-    for (i = 0; i < len2; i++)
-        concat[len1 + i] = s2[i];
+	/* Copy s2 to concat */
+	for (i = 0; i < len2; i++)
+		concat[len1 + i] = s2[i];
 
-    /* Add null terminator */
-    concat[len1 + len2] = '\0';
+	/* Add null terminator */
+	concat[len1 + len2] = '\0';
 
-    return (concat);
+	return (concat);
 }
