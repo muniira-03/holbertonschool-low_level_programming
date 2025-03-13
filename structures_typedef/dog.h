@@ -1,4 +1,3 @@
-#include <stdio.h>
 #ifndef DOG_H
 #define DOG_H
 
@@ -11,9 +10,9 @@
  */
 struct dog
 {
-		char *name;   /* Dog's name */
-		float age;    /* Dog's age */
-		char *owner;  /* Dog's owner */
+	char *name;   /* Dog's name */
+	float age;     /* Dog's age */
+	char *owner;   /* Dog's owner */
 };
 
 void init_dog(struct dog *d, char *name, float age, char *owner);
