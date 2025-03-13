@@ -1,0 +1,77 @@
+#include "main.h"
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+void _putchar(char c)
+{
+    write(1, &c, 1);
+}
+
+void print_error(void)
+{
+    char *error = "Error\n";
+    while (*error)
+        _putchar(*error++);
+    exit(98);
+}
+
+int multiply(char *num1, char *num2)
+{
+    int len1 = strlen(num1);
+    int len2 = strlen(num2);
+    int *result = calloc(len1 + len2, sizeof(int));
+    int i, j, mul, sum;
+
+    if (!result)
+        return (1);
+
+    // Loop to multiply the numbers
+    for (i = len1 - 1; i >= 0; i--)
+    {
+        for (j = len2 - 1; j >= 0; j--)
+        {
+            mul = (num1[i] - '0') * (num2[j] - '0');
+            sum = result[i + j + 1] + mul;
+            result[i + j + 1] = sum % 10;
+            result[i + j] += sum / 10;
+        }
+    }
+
+    // Skip leading zeros and print the result
+    int start = 0;
+    while (start < len1 + len2 && result[start] == 0)
+        start++;
+
+    if (start == len1 + len2)  // Case where result is 0
+        _putchar('0');
+    else
+    {
+        for (i = start; i < len1 + len2; i++)
+            _putchar(result[i] + '0');
+    }
+
+    _putchar('\n');
+    free(result);
+    return (0);
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc != 3)
+        print_error();
+
+    for (int i = 1; i < argc; i++)
+    {
+        for (int j = 0; argv[i][j] != '\0'; j++)
+        {
+            if (argv[i][j] < '0' || argv[i][j] > '9')
+                print_error();
+        }
+    }
+
+    if (multiply(argv[1], argv[2]) != 0)
+        print_error();
+
+    return (0);
+}
