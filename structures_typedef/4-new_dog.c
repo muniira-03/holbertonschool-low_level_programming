@@ -9,12 +9,12 @@
  */
 int _strlen(char *s)
 {
-	int len = 0;
+    int len = 0;
 
-	while (s[len] != '\0')
-		len++;
+    while (s[len] != '\0')
+        len++;
 
-	return (len);
+    return (len);
 }
 
 /**
@@ -26,40 +26,41 @@ int _strlen(char *s)
  */
 dog_t *new_dog(char *name, float age, char *owner)
 {
-	dog_t *new_dog;
+    dog_t *new_dog;
+    int i;
 
-	/* Allocate memory for the new dog */
-	new_dog = malloc(sizeof(dog_t));
-	if (new_dog == NULL)
-		return (NULL);
+    /* Allocate memory for the new dog */
+    new_dog = malloc(sizeof(dog_t));
+    if (new_dog == NULL)
+        return (NULL);
 
-	/* Allocate memory for the name */
-	new_dog->name = malloc(sizeof(char) * (_strlen(name) + 1));
-	if (new_dog->name == NULL)
-	{
-		free(new_dog);
-		return (NULL);
-	}
+    /* Allocate memory for the name */
+    new_dog->name = malloc(sizeof(char) * (_strlen(name) + 1));
+    if (new_dog->name == NULL)
+    {
+        free(new_dog);
+        return (NULL);
+    }
 
-	/* Allocate memory for the owner */
-	new_dog->owner = malloc(sizeof(char) * (_strlen(owner) + 1));
-	if (new_dog->owner == NULL)
-	{
-		free(new_dog->name);
-		free(new_dog);
-		return (NULL);
-	}
+    /* Allocate memory for the owner */
+    new_dog->owner = malloc(sizeof(char) * (_strlen(owner) + 1));
+    if (new_dog->owner == NULL)
+    {
+        free(new_dog->name);
+        free(new_dog);
+        return (NULL);
+    }
 
-	/* Copy the values into the structure */
-	for (int i = 0; i < _strlen(name); i++)
-		new_dog->name[i] = name[i];
-	new_dog->name[_strlen(name)] = '\0';
+    /* Copy the values into the structure */
+    for (i = 0; i < _strlen(name); i++)
+        new_dog->name[i] = name[i];
+    new_dog->name[_strlen(name)] = '\0';
 
-	new_dog->age = age;
+    new_dog->age = age;
 
-	for (int i = 0; i < _strlen(owner); i++)
-		new_dog->owner[i] = owner[i];
-	new_dog->owner[_strlen(owner)] = '\0';
+    for (i = 0; i < _strlen(owner); i++)
+        new_dog->owner[i] = owner[i];
+    new_dog->owner[_strlen(owner)] = '\0';
 
-	return (new_dog);
+    return (new_dog);
 }
