@@ -10,9 +10,9 @@
  */
 struct dog
 {
-	char *name;   /* Dog's name */
-	float age;     /* Dog's age */
-	char *owner;   /* Dog's owner */
+        char *name;   /* Dog's name */
+        float age;    /* Dog's age */
+        char *owner;  /* Dog's owner */
 };
 typedef struct dog dog_t;
 
@@ -20,4 +20,6 @@ void init_dog(struct dog *d, char *name, float age, char *owner);
 void print_dog(struct dog *d);
 dog_t *new_dog(char *name, float age, char *owner);
 void free_dog(dog_t *d);
+int _strlen(char *s);  /* Add this line to declare _strlen function */
+
 #endif /* DOG_H */
