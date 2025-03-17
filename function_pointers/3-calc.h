@@ -5,14 +5,14 @@
 #include <stdlib.h>
 
 /**
- * struct op - Struct op
+ * struct op - Struct for an operator and its function
  * @op: The operator
- * @f: The function associated
+ * @f: The corresponding function
  */
 typedef struct op
 {
-    char *op;
-    int (*f)(int a, int b);
+	char *op;
+	int (*f)(int a, int b);
 } op_t;
 
 int op_add(int a, int b);
