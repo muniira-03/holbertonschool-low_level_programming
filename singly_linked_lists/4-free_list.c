@@ -6,13 +6,14 @@
  */
 void free_list(list_t *head)
 {
-    list_t *temp;
+	list_t *temp;
 
-    while (head)
-    {
-        temp = head->next;  /* Store the next node */
-        free(head->str);     /* Free the duplicated string */
-        free(head);          /* Free the current node */
-        head = temp;         /* Move to the next node */
-    }
+	while (head)
+	{
+		temp = head->next; /* Store the next node */
+		free(head->str);   /* Free the duplicated string */
+		free(head);        /* Free the current node */
+		head = temp;       /* Move to the next node */
+	}
+}
 }
