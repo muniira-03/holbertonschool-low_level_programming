@@ -1,4 +1,5 @@
 #include "lists.h"
+#include <stdlib.h>
 
 /**
  * free_list - Frees a list_t linked list
@@ -15,5 +16,4 @@ void free_list(list_t *head)
 		free(head);        /* Free the current node */
 		head = temp;       /* Move to the next node */
 	}
-}
 }
