@@ -1,41 +1,71 @@
-#include "holberton.h"
+#include "main.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
-/**
-  * main - entry point
-  * @ac: argument count
-  * @av: array of argument tokens
-  * Return: 0 on success
-  */
-int main(int ac, char *av[])
-{
-	int fd_from, fd_to, rd_stat, wr_stat;
-	mode_t perm = S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH;
-	char buffer[BUFSIZE];
 
-	if (ac != 3)
-		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n"), exit(97);
-	fd_from = open(av[1], O_RDONLY);
-	if (fd_from == -1)
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", av[1]), exit(98);
-	fd_to = open(av[2], O_CREAT | O_WRONLY | O_TRUNC, perm);
-	if (fd_to == -1)
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", av[2]), exit(99);
-	rd_stat = 1;
-	while (rd_stat)
+#define BUFFER_SIZE 1024
+
+/**
+ * print_error - Prints error message and exits.
+ * @exit_code: Code to exit with.
+ * @message: The message to print.
+ * @filename: The file name to include in message.
+ */
+void print_error(int exit_code, const char *message, const char *filename)
+{
+	dprintf(STDERR_FILENO, "%s %s\n", message, filename);
+	exit(exit_code);
+}
+
+/**
+ * main - Copies content of file_from to file_to.
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ *
+ * Return: 0 on success.
+ */
+int main(int argc, char *argv[])
+{
+	int from_fd, to_fd, r, w;
+	char buffer[BUFFER_SIZE];
+
+	if (argc != 3)
+		print_error(97, "Usage: cp file_from file_to", "");
+
+	from_fd = open(argv[1], O_RDONLY);
+	if (from_fd == -1)
+		print_error(98, "Error: Can't read from file", argv[1]);
+
+	to_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (to_fd == -1)
 	{
-		rd_stat = read(fd_from, buffer, BUFSIZE);
-		if (rd_stat == -1)
-			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", av[1]), exit(98);
-		if (rd_stat > 0)
+		close(from_fd);
+		print_error(99, "Error: Can't write to", argv[2]);
+	}
+
+	while ((r = read(from_fd, buffer, BUFFER_SIZE)) > 0)
+	{
+		w = write(to_fd, buffer, r);
+		if (w != r)
 		{
-			wr_stat = write(fd_to, buffer, rd_stat);
-			if (wr_stat != rd_stat || wr_stat == -1)
-				dprintf(STDERR_FILENO, "Error: Can't write to %s\n", av[2]), exit(99);
+			close(from_fd);
+			close(to_fd);
+			print_error(99, "Error: Can't write to", argv[2]);
 		}
 	}
-	if (close(fd_from) == -1)
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_from), exit(100);
-	if (close(fd_to) == -1)
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_to), exit(100);
+	if (r == -1)
+	{
+		close(from_fd);
+		close(to_fd);
+		print_error(98, "Error: Can't read from file", argv[1]);
+	}
+
+	if (close(from_fd) == -1)
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", from_fd), exit(100);
+	if (close(to_fd) == -1)
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", to_fd), exit(100);
+
 	return (0);
 }
+
