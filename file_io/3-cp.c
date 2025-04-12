@@ -1,79 +1,41 @@
 #include "holberton.h"
-
+#include <stdio.h>
 /**
- * _errexit - print error message and exit
- * @str: err message as string
- * @file: file name as string
- * @code: exit code
- * Return: void
- */
-void _errexit(char *str, char *file, int code)
+  * main - entry point
+  * @ac: argument count
+  * @av: array of argument tokens
+  * Return: 0 on success
+  */
+int main(int ac, char *av[])
 {
-	dprintf(STDERR_FILENO, str, file);
-	exit(code);
-}
+	int fd_from, fd_to, rd_stat, wr_stat;
+	mode_t perm = S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH;
+	char buffer[BUFSIZE];
 
-/**
- * _cp - copy source file to destination file
- * @file_from: source file
- * @file_to: destination file
- *
- * Return: void
- */
-void _cp(char *file_from, char *file_to)
-{
-	int fd1, fd2, numread, numwrote;
-	char buffer[1024];
-
-	fd1 = open(file_from, O_RDONLY);
-	if (fd1 == -1)
-		_errexit("Error: Can't read from file %s\n", file_from, 98);
-
-	fd2 = open(file_to, O_CREAT | O_WRONLY | O_TRUNC, 0664);
-	if (fd2 == -1)
-		_errexit("Error: Can't write to %s\n", file_to, 99);
-
-	numread = 1024;
-	while (numread == 1024)
+	if (ac != 3)
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n"), exit(97);
+	fd_from = open(av[1], O_RDONLY);
+	if (fd_from == -1)
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", av[1]), exit(98);
+	fd_to = open(av[2], O_CREAT | O_WRONLY | O_TRUNC, perm);
+	if (fd_to == -1)
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", av[2]), exit(99);
+	rd_stat = 1;
+	while (rd_stat)
 	{
-		numread = read(fd1, buffer, 1024);
-		if (numread == -1)
-			_errexit("Error: Can't read from file %s\n", file_from, 98);
-
-		numwrote = write(fd2, buffer, numread);
-
-		if (numwrote == -1)
-			_errexit("Error: Can't write to %s\n", file_to, 99);
+		rd_stat = read(fd_from, buffer, BUFSIZE);
+		if (rd_stat == -1)
+			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", av[1]), exit(98);
+		if (rd_stat > 0)
+		{
+			wr_stat = write(fd_to, buffer, rd_stat);
+			if (wr_stat != rd_stat || wr_stat == -1)
+				dprintf(STDERR_FILENO, "Error: Can't write to %s\n", av[2]), exit(99);
+		}
 	}
-
-	if (numread == -1)
-		_errexit("Error: Can't read from file %s\n", file_from, 98);
-	if (close(fd2) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd2);
-		exit(100);
-	}
-	if (close(fd1) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd2);
-		exit(100);
-	}
-}
-/**
- *main - copies a file to another file
- *@argc: number of arguments passed to function
- *@argv: array containing arguments
- *Return: 0 on success
- */
-int main(int argc, char *argv[])
-{
-	if (argc != 3)
-	{
-		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
-		exit(97);
-	}
-
-	_cp(argv[1], argv[2]);
-
+	if (close(fd_from) == -1)
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_from), exit(100);
+	if (close(fd_to) == -1)
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_to), exit(100);
 	return (0);
 }
