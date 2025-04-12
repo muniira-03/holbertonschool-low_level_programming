@@ -1,114 +1,79 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-/**
- * close_errchk - closes a file descriptor and prints
- * an error message if it fails
- *
- * @fd: file descriptor to close
- *
- * Return: 0 on success, -1 on failure
- */
-int close_errchk(int fd)
-{
-	int err;
+#include "holberton.h"
 
-	err = close(fd);
-	if (err == -1)
+/**
+ * _errexit - print error message and exit
+ * @str: err message as string
+ * @file: file name as string
+ * @code: exit code
+ * Return: void
+ */
+void _errexit(char *str, char *file, int code)
+{
+	dprintf(STDERR_FILENO, str, file);
+	exit(code);
+}
+
+/**
+ * _cp - copy source file to destination file
+ * @file_from: source file
+ * @file_to: destination file
+ *
+ * Return: void
+ */
+void _cp(char *file_from, char *file_to)
+{
+	int fd1, fd2, numread, numwrote;
+	char buffer[1024];
+
+	fd1 = open(file_from, O_RDONLY);
+	if (fd1 == -1)
+		_errexit("Error: Can't read from file %s\n", file_from, 98);
+
+	fd2 = open(file_to, O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	if (fd2 == -1)
+		_errexit("Error: Can't write to %s\n", file_to, 99);
+
+	numread = 1024;
+	while (numread == 1024)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
-		return (100);
+		numread = read(fd1, buffer, 1024);
+		if (numread == -1)
+			_errexit("Error: Can't read from file %s\n", file_from, 98);
+
+		numwrote = write(fd2, buffer, numread);
+
+		if (numwrote == -1)
+			_errexit("Error: Can't write to %s\n", file_to, 99);
 	}
-	return (0);
+
+	if (numread == -1)
+		_errexit("Error: Can't read from file %s\n", file_from, 98);
+	if (close(fd2) == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd2);
+		exit(100);
+	}
+	if (close(fd1) == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd2);
+		exit(100);
+	}
 }
-
 /**
- * write_err - error handler for a write error
- *
- * @fd1: first descriptor to close
- * @fd2: second descriptor to close
- * @filename: filename prompting the error
- *
- * Return: 99
+ *main - copies a file to another file
+ *@argc: number of arguments passed to function
+ *@argv: array containing arguments
+ *Return: 0 on success
  */
-int write_err(int fd1, int fd2, char *filename)
+int main(int argc, char *argv[])
 {
-	dprintf(STDERR_FILENO, "Error: Can't write to %s\n", filename);
-	close_errchk(fd1);
-	close_errchk(fd2);
-	return (99);
-}
-
-/**
- * read_err - error handler for a read error
- *
- * @fd1: first descriptor to close
- * @fd2: second descriptor to close
- * @filename: filename prompting the error
- *
- * Return: 98
- */
-int read_err(int fd1, int fd2, char *filename)
-{
-	dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", filename);
-	close_errchk(fd1);
-	close_errchk(fd2);
-	return (98);
-}
-
-/**
- * main - copy one file to another, new file with perms 664
- * usage - cp file_from file_to
- *
- * @ac: number of arg
- * @av: list of args
- *
- * Return: 97 if incorrect num of args
- * 98 if file_from does not exist or unreadable
- * 99 if write fails
- * 100 if file close fails
- * 0 otherwise
- */
-int main(int ac, char *av[])
-{
-	char buf[1024];
-	int lenr, lenw, file_from, file_to, err;
-
-	if (ac != 3)
+	if (argc != 3)
 	{
 		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
-		return (97);
+		exit(97);
 	}
-	file_from = open(av[1], O_RDONLY);
-	if (file_from == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n",
-			av[1]);
-		return (98);
-	}
-	file_to = open(av[2], O_WRONLY | O_CREAT | O_TRUNC,
-		       S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
-	if (file_to == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", av[2]);
-		close_errchk(file_from);
-		return (99);
-	}
-	do {
-		lenr = read(file_from, buf, 1024);
-		if (lenr == -1)
-			return (read_err(file_from, file_to, av[1]));
-		lenw = write(file_to, buf, lenr);
-		if (lenw == -1 || lenw != lenr)
-			return (write_err(file_from, file_to, av[2]));
-	} while (lenr == 1024);
-	err = close_errchk(file_from);
-	err += close_errchk(file_to);
-	if (err != 0)
-		return (100);
+
+	_cp(argv[1], argv[2]);
+
 	return (0);
 }
